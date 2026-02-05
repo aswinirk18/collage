@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Northview College Events</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- CSS -->
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background-color: #f4f6f8;
+        }
+
+        /* Header */
+        header {
+            background-color: #0b3c5d;
+            color: white;
+            padding: 15px 20px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo img {
+            width: 40px;
+            height: 40px;
+        }
+
+        nav a {
+            color: white;
+            margin-left: 20px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        nav a:hover {
+            text-decoration: underline;
+        }
+
+        .search-bar {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .search-bar input,
+        .search-bar select {
+            padding: 8px;
+            width: 200px;
+        }
+
+        /* Events */
+        main {
+            padding: 20px;
+        }
+
+        .events {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .event-card {
+            background-color: white;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .event-card h3 {
+            margin-top: 0;
+            color: #0b3c5d;
+        }
+
+        .event-card button {
+            background-color: #0b3c5d;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .event-card button:hover {
+            background-color: #092f48;
+        }
+
+        /* Pagination */
+        .pagination {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .pagination button {
+            padding: 8px 12px;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #0b3c5d;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        footer a {
+            color: white;
+            margin: 0 10px;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+    <div class="header-top">
+        <div class="logo">
+            <img src="https://via.placeholder.com/40" alt="Logo">
+            <h2>Northview College</h2>
+        </div>
+
+        <nav>
+            <a href="#">Home</a>
+            <a href="#">Events</a>
+            <a href="#">Admissions</a>
+            <a href="#">Contact</a>
+        </nav>
+    </div>
+
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search by title or date">
+        <select id="categoryFilter">
+            <option value="all">All Categories</option>
+            <option value="Sports">Sports</option>
+            <option value="Workshop">Workshop</option>
+            <option value="Lecture">Guest Lecture</option>
+        </select>
+
+        <select id="dateFilter">
+            <option value="all">All Dates</option>
+            <option value="today">Today</option>
+            <option value="week">This Week</option>
+        </select>
+    </div>
+</header>
+
+<!-- EVENTS -->
+<main>
+    <div class="events" id="eventContainer"></div>
+
+    <div class="pagination">
+        <button id="prevBtn">Previous</button>
+        <span id="pageInfo"></span>
+        <button id="nextBtn">Next</button>
+    </div>
+</main>
+
+<!-- FOOTER -->
+<footer>
+    <p>📞 Phone: +91 0000000000 | 📧 Email: info@northviewcollege.edu</p>
+    <p>
+        <a href="#">LinkedIn</a>
+        <a href="#">Facebook</a>
+        <a href="#">Twitter</a>
+    </p>
+</footer>
+
+<!-- JAVASCRIPT -->
+<script>
+    const events = [
+        { title: "Football Tournament", date: "2026-02-03", category: "Sports", description: "Inter-college football competition", location: "Ground" },
+        { title: "AI Workshop", date: "2026-02-04", category: "Workshop", description: "Hands-on AI training", location: "Lab 2" },
+        { title: "Guest Lecture on Cyber Security", date: "2026-02-05", category: "Lecture", description: "Industry expert talk", location: "Auditorium" },
+        { title: "Basketball Match", date: "2026-02-06", category: "Sports", description: "Friendly match", location: "Court" },
+        { title: "Web Development Workshop", date: "2026-02-07", category: "Workshop", description: "HTML, CSS, JS basics", location: "Lab 1" },
+        { title: "Entrepreneur Talk", date: "2026-02-08", category: "Lecture", description: "Startup guidance", location: "Hall A" }
+    ];
+
+    const eventsPerPage = 5;
+    let currentPage = 1;
+    let filteredEvents = [...events];
+
+    const container = document.getElementById("eventContainer");
+    const pageInfo = document.getElementById("pageInfo");
+
+    function displayEvents() {
+        container.innerHTML = "";
+
+        const start = (currentPage - 1) * eventsPerPage;
+        const end = start + eventsPerPage;
+        const pageEvents = filteredEvents.slice(start, end);
+
+        pageEvents.forEach(event => {
+            const card = document.createElement("div");
+            card.className = "event-card";
+            card.innerHTML = `
+                <h3>${event.title}</h3>
+                <p><strong>Date:</strong> ${event.date}</p>
+                <p>${event.description}</p>
+                <button>View Details</button>
+            `;
+            container.appendChild(card);
+        });
+
+        pageInfo.textContent = `Page ${currentPage} of ${Math.ceil(filteredEvents.length / eventsPerPage)}`;
+    }
+
+    function applyFilters() {
+        const search = document.getElementById("searchInput").value.toLowerCase();
+        const category = document.getElementById("categoryFilter").value;
+        const dateFilter = document.getElementById("dateFilter").value;
+
+        const today = new Date();
+        filteredEvents = events.filter(event => {
+            const eventDate = new Date(event.date);
+
+            const matchSearch = event.title.toLowerCase().includes(search) || event.date.includes(search);
+            const matchCategory = category === "all" || event.category === category;
+
+            let matchDate = true;
+            if (dateFilter === "today") {
+                matchDate = eventDate.toDateString() === today.toDateString();
+            } else if (dateFilter === "week") {
+                const weekLater = new Date();
+                weekLater.setDate(today.getDate() + 7);
+                matchDate = eventDate >= today && eventDate <= weekLater;
+            }
+
+            return matchSearch && matchCategory && matchDate;
+        });
+
+        currentPage = 1;
+        displayEvents();
+    }
+
+    document.getElementById("searchInput").addEventListener("input", applyFilters);
+    document.getElementById("categoryFilter").addEventListener("change", applyFilters);
+    document.getElementById("dateFilter").addEventListener("change", applyFilters);
+
+    document.getElementById("prevBtn").addEventListener("click", () => {
+        if (currentPage > 1) {
+            currentPage--;
+            displayEvents();
+        }
+    });
+
+    document.getElementById("nextBtn").addEventListener("click", () => {
+        if (currentPage < Math.ceil(filteredEvents.length / eventsPerPage)) {
+            currentPage++;
+            displayEvents();
+        }
+    });
+
+    displayEvents();
+</script>
+
+</body>
+</html>
